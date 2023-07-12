@@ -9,3 +9,13 @@ This repository stores some applications developed with Qt5 and validated in the
 * Kernel - Linux colibri-imx6ull-06823042 6.1.22-6.2.0+git.3b29299e5f60
 * SOM - Colibri iMX6ULL 512MB IT V1.1A
 * Board - Aster V1.1B
+
+## SDK
+
+Link to download the [SDK zip file](https://1drv.ms/u/s!AlvNShAja1sTjYxFV3EHKlfO4ykq_w?e=0uQFux).
+
+## Tutorial on LinkedIn
+
+* [Qt on i.MX6ULL Part 0: Installation and Initial Setup](https://www.linkedin.com/pulse/qt-imx6ull-part-0-installation-initial-setup-charles-dias-m-sc-/?published=t).
+
+
