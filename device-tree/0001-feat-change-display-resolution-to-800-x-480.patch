@@ -1,0 +1,284 @@
+From b65a0ce7f11077b698e1665d50f3eb840b5492fb Mon Sep 17 00:00:00 2001
+From: CharlesDias <charlesdias@tecnofuturo.com.br>
+Date: Sat, 8 Apr 2023 18:37:19 -0300
+Subject: [PATCH] feat: change display resolution to 800 x 480
+
+---
+ arch/arm/boot/dts/imx6ull-colibri-aster.dts |  54 ++++++
+ compiler_kernel _and_device_tree.md         | 201 ++++++++++++++++++++
+ 2 files changed, 255 insertions(+)
+ create mode 100755 compiler_kernel _and_device_tree.md
+
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-aster.dts b/arch/arm/boot/dts/imx6ull-colibri-aster.dts
+index d3f2fb7c6c1e..05d660608fcd 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-aster.dts
++++ b/arch/arm/boot/dts/imx6ull-colibri-aster.dts
+@@ -18,3 +18,57 @@ / {
+ &atmel_mxt_ts {
+ 	status = "okay";
+ };
++
++// Resistive AD7879 touch controller for the 7" display orderable
++// at Toradex.
++
++&ad7879_ts {
++   status = "okay";
++};
++
++&i2c2 {
++   /* Was disabled because ad7879 is a single I2C slave */
++   status = "okay";
++};
++
++// Enable the parallel RGB interface on the Colibri iMX6ULL.
++
++&backlight {
++   status = "okay";
++};
++
++&lcdif {
++   status = "okay";
++};
++
++&panel_dpi {
++   data-mapping = "bgr666";
++   status = "okay";
++};
++
++&pwm4 {
++   status = "okay";
++};
++
++// LT161010 panel with a resolution of 800x480 pixel.
++
++&panel_dpi {
++   compatible = "panel-dpi";
++   status = "okay";
++
++   width-mm = <154>;
++   height-mm = <86>;
++
++   panel-timing {
++       clock-frequency = <33230769>;
++       hactive = <800>;
++       vactive = <480>;
++       hsync-len = <128>;
++       hfront-porch = <40>;
++       hback-porch = <88>;
++       vsync-len = <1>;
++       vfront-porch = <10>;
++       vback-porch = <33>;
++       pixelclk-active = <1>;
++   };
++};
+\ No newline at end of file
+diff --git a/compiler_kernel _and_device_tree.md b/compiler_kernel _and_device_tree.md
+new file mode 100755
+index 000000000000..be61435f96b5
+--- /dev/null
++++ b/compiler_kernel _and_device_tree.md	
+@@ -0,0 +1,201 @@
++
++# Build Linux Kernel from Source Code
++
++Note: Text copy from Toradex website. Link below:
++
++https://developer.toradex.com/linux-bsp/os-development/build-u-boot-and-linux-kernel-from-source-code/build-linux-kernel-from-source-code/#bsp6.0.0
++
++
++## Prepare the Host Machine for Cross-Compilation
++
++Use version 9.2 of the Arm releases binary toolchains to cross-compile software for Toradex modules:
++
++* For 32 bit Arm: gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz
++* For 64 bit Arm: gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz
++
++### Install the GNU Toolchain
++
++To install the toolchain on your host machine, download and unpack the tar.xz file. From the command-line:
++
++```console
++$ cd ~
++$ wget -O gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz?revision=fed31ee5-2ed7-40c8-9e0e-474299a3c4ac&la=en&hash=76DAF56606E7CB66CC5B5B33D8FB90D9F24C9D20"
++$ tar xvf gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz
++$ ln -s gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf gcc-linaro-bsp6
++```
++
++### Export the environment variables
++
++The U-Boot and Linux makefiles use the environment variables ARCH/CROSS_COMPILE to configure and call the compiler correctly. Therefore, these environment variables must be exported in any shell instance that will run configure/compile commands to build U-Boot or Linux for the target module.
++
++```console
++$ export ARCH=arm
++$ export DTC_FLAGS="-@"
++$ export PATH=~/gcc-linaro-bsp6/bin/:$PATH
++$ export CROSS_COMPILE=arm-none-linux-gnueabihf-
++```
++
++Or 
++
++```console
++$ export ARCH=arm && export DTC_FLAGS="-@" && export PATH=~/gcc-linaro-bsp6/bin/:$PATH && export CROSS_COMPILE=arm-none-linux-gnueabihf-
++```
++
++### Install Tools and Dependencies
++Build Host
++You need some essential build tools to compile the Kernel or DTC. Most are likely part of your distro's standard install.
++
++```console
++sudo apt-get install bc build-essential git libncurses5-dev lzop perl libssl-dev bison flex
++```
++
++## Kernel Version Information
++The required git branch and Linux binaries to be used depend on module type and BSP version, as we will explain in this article.
++
++### Upstream-based Kernel
++
++| SoC          | Kernel Configuration | Kernel Binary       |
++|--------------|----------------------|---------------------|
++| i.MX 8MM/8MP | master	              | defconfig           |
++| i.MX 7	      | master               | imx_v6_v7_defconfig |
++| i.MX 6	      | master               | imx_v6_v7_defconfig |
++| i.MX 6ULL    | master               | imx_v6_v7_defconfig |
++
++For the upstream-based kernel, the Kernel Git Branch is master and the tags can be:
++
++* BSP 6.0.0: `v6.0`
++* BSP 6.1.0: `v6.1`
++
++
++## Building Linux Kernel BSP 6.0 for iMX6ULL
++
++### Download the Linux Kernel Source
++
++Obtain the kernel source code using Git. For BSP 6 and Colibri iMX6ULL, the kernel that you will use is the mainline kernel from Linus Torvalds, not our linux Toradex fork.
++
++```console
++$ mkdir -p ~/workdir
++$ cd ~/workdir
++$ git clone -b v6.0 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
++```
++
++### Kernel Configuration
++
++Our kernel tree provides default kernel configurations for our modules:
++
++Ensure the environment is configured for cross-compilation as explained in the toolchain chapter.
++
++Set the default configuration:
++
++```console
++$ cd ~/workdir/linux-toradex
++$ make imx_v6_v7_defconfig
++```
++
++Then you can compile your device tree using Yocto or the linux kernel source v6.0 mainline:
++
++### Device Tree compilation
++
++```console
++make imx6ull-colibri-aster.dtb
++```
++
++Copy to target new DTB to target
++
++```console
++sudo scp arch/arm/boot/dts/imx6ull-colibri-aster.dtb root@<device-ip>:/home/root/
++```
++
++And update the DTB
++
++```console
++ubiupdatevol /dev/ubi0_1 imx6ull-colibri-aster.dtb
++reboot
++```
++
++## Embedded Linux BSP 2.8
++
++Beginning with image 2.8, as part of our OpenEmbedded Rocko update we transitioned to using version 7.3 of the gcc compiler. Linaro releases well tested binary toolchains which can be used to cross-compile software for our modules:
++
++For 32 bit Arm: gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf.tar.xz
++For 64 bit Arm: Embedded Linux BSP 2.8 does not support any 64 bit Arm SoMs by Toradex.
++
++https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/arm-linux-gnueabihf/
++
++To install the toolchain on your host machine, download and unpack the tar.xz file. From the command-line:
++
++```
++$ cd ~
++$ wget -O gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf.tar.xz "https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/arm-linux-gnueabihf/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf.tar.xz"
++$ tar xvf gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf.tar.xz
++$ ln -s gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf gcc-linaro
++```
++
++The U-Boot and Linux makefiles use the environment variables ARCH/CROSS_COMPILE to configure and call the compiler correctly. Therefore, these environment variables must be exported in any shell instance that will run configure/compile commands to build U-Boot or Linux for the target module.
++
++```
++$ export ARCH=arm && export PATH=~/gcc-linaro/bin/:$PATH && export CROSS_COMPILE=arm-linux-gnueabihf-
++```
++Or
++
++```
++$ export ARCH=arm 
++$ export PATH=~/gcc-linaro/bin/:$PATH
++$ export CROSS_COMPILE=arm-linux-gnueabihf-
++```
++
++You can put those commands into a file and source that file to export it more easily, E.g.:
++
++```
++$ echo "export ARCH=arm" >> ~/export_compiler
++$ echo "export PATH=~/gcc-linaro/bin/:$PATH" >> ~/export_compiler
++$ echo "export CROSS_COMPILE=arm-linux-gnueabihf-" >> ~/export_compiler
++$ source ~/export_compiler
++```
++
++# Building Linux Kernel
++
++## Download the Linux Kernel Source
++
++1. Obtain the kernel source code using Git. Branch `toradex_4.9-2.3.x-imx` is referent to BSP verison 2.8b5 and later.
++
++```console
++$ mkdir -p ~/workdir
++$ cd ~/workdir
++$ git clone -b toradex_4.9-2.3.x-imx git://git.toradex.com/linux-toradex.git
++```
++
++## Kernel Configuration
++
++1. Set the Kernel configuration. It has to use the `colibri-imx6ull_defconfig` for BSP verison 2.8b5 and later.
++
++```console
++make colibri-imx6ull_defconfig
++```
++
++## Compiling the .dtb file
++
++```
++make colibri-imx6ull_defconfig
++make imx6ull-colibri-dreamau-v1.dtb
++```
++
++Copy to target
++
++```
++sudo scp arch/arm/boot/dts/imx6ull-colibri-dreamau-v1.dtb root@<device-ip>:/home/root/imx6ull-colibri-dreamau-v1.dtb
++```
++
++Update the DTB
++```
++ubiupdatevol /dev/ubi0_1 imx6ull-colibri-dreamau-v1.dtb
++reboot
++```
++
++#### Colibri iMX6ULL/iMX7
++```
++setenv vidargs 'video=mxsfb:800x480M-16@60,pixclockpol=1'
++saveen
++```
++
++
+-- 
+2.34.1
+

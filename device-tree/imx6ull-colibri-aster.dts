@@ -1,0 +1,74 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/*
+ * Copyright 2017-2022 Toradex
+ */
+
+/dts-v1/;
+
+#include "imx6ull-colibri-nonwifi.dtsi"
+#include "imx6ull-colibri-aster.dtsi"
+
+/ {
+	model = "Toradex Colibri iMX6ULL 256/512MB on Colibri Aster";
+	compatible = "toradex,colibri-imx6ull-aster",
+		     "toradex,colibri-imx6ull",
+		     "fsl,imx6ull";
+};
+
+&atmel_mxt_ts {
+	status = "okay";
+};
+
+// Resistive AD7879 touch controller for the 7" display orderable
+// at Toradex.
+
+&ad7879_ts {
+   status = "okay";
+};
+
+&i2c2 {
+   /* Was disabled because ad7879 is a single I2C slave */
+   status = "okay";
+};
+
+// Enable the parallel RGB interface on the Colibri iMX6ULL.
+
+&backlight {
+   status = "okay";
+};
+
+&lcdif {
+   status = "okay";
+};
+
+&panel_dpi {
+   data-mapping = "bgr666";
+   status = "okay";
+};
+
+&pwm4 {
+   status = "okay";
+};
+
+// LT161010 panel with a resolution of 800x480 pixel.
+
+&panel_dpi {
+   compatible = "panel-dpi";
+   status = "okay";
+
+   width-mm = <154>;
+   height-mm = <86>;
+
+   panel-timing {
+       clock-frequency = <33230769>;
+       hactive = <800>;
+       vactive = <480>;
+       hsync-len = <128>;
+       hfront-porch = <40>;
+       hback-porch = <88>;
+       vsync-len = <1>;
+       vfront-porch = <10>;
+       vback-porch = <33>;
+       pixelclk-active = <1>;
+   };
+};
