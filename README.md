@@ -16,13 +16,13 @@ Link to download the [SDK zip file](https://1drv.ms/u/s!AlvNShAja1sTjYxFV3EHKlfO
 
 ## Tutorial on LinkedIn
 
-* [Qt on i.MX6ULL Part 0: Installation and Initial Setup](https://www.linkedin.com/pulse/qt-imx6ull-part-0-installation-initial-setup-charles-dias-m-sc-/).
-* [Qt on i.MX6ULL Part 1: Hello, LED On/Off](https://www.linkedin.com/pulse/qt-imx6ull-part-1-hello-led-onoff-charles-dias-m-sc-).
+* [Qt on iMX6ULL Part 0: Installation and Initial Setup](https://www.linkedin.com/pulse/qt-imx6ull-part-0-installation-initial-setup-charles-dias-m-sc-/).
+* [Qt on iMX6ULL Part 1: Hello, LED On/Off](https://www.linkedin.com/pulse/qt-imx6ull-part-1-hello-led-onoff-charles-dias-m-sc-).
 
 
 ## Examples of projects
 
-* [Part1-HelloLed](/samples/Part1-HelloLed/) - turn on and turn off the GPIO pin SODIMM_55. Project example used on [Qt on i.MX6ULL Part 1: Hello, LED On/Off](https://www.linkedin.com/pulse/qt-imx6ull-part-1-hello-led-onoff-charles-dias-m-sc-) article.
+* [Part1-HelloLed](/samples/Part1-HelloLed/) - turn on and turn off the GPIO pin SODIMM_55. Project example used on [Qt on iMX6ULL Part 1: Hello, LED On/Off](https://www.linkedin.com/pulse/qt-imx6ull-part-1-hello-led-onoff-charles-dias-m-sc-) article.
 
 
 
