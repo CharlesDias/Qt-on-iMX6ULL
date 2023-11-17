@@ -18,7 +18,7 @@ Link to download the [SDK zip file](https://1drv.ms/u/s!AlvNShAja1sTjYxFV3EHKlfO
 
 * [Qt on iMX6ULL Part 0: Installation and Initial Setup.](https://www.linkedin.com/pulse/qt-imx6ull-part-0-installation-initial-setup-charles-dias-m-sc-/)
 * [Qt on iMX6ULL Part 1: Hello, LED On/Off.](https://www.linkedin.com/pulse/qt-imx6ull-part-1-hello-led-onoff-charles-dias-m-sc-)
-*[Qt on iMX6ULL Part 2: Logging messages and settings for debugging.](https://www.linkedin.com/pulse/qt-imx6ull-part-2-logging-messages-settings-debugging-dias-m-sc-)
+* [Qt on iMX6ULL Part 2: Logging messages and settings for debugging.](https://www.linkedin.com/pulse/qt-imx6ull-part-2-logging-messages-settings-debugging-dias-m-sc-)
 
 
 ## Examples of projects
